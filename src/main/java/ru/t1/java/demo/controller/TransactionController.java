@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.t1.java.demo.dto.TransactionRequestDto;
-import ru.t1.java.demo.dto.TransactionResponseDto;
+import ru.t1.java.demo.dto.api.TransactionRequestDto;
+import ru.t1.java.demo.dto.api.TransactionResponseDto;
 import ru.t1.java.demo.service.TransactionService;
 
 /**
@@ -65,6 +65,8 @@ public class TransactionController {
     public ResponseEntity<TransactionResponseDto> getTransactionById(@PathVariable Long id) {
         return new ResponseEntity<>(transactionService.getTransactionById(id), HttpStatus.OK);
     }
+
+    //TODO: getTransactionsByAccountId
 
     /**
      * Обновляет данные транзакции по его идентификатору.
