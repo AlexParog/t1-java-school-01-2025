@@ -4,8 +4,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import ru.t1.java.demo.dto.TransactionRequestDto;
-import ru.t1.java.demo.dto.TransactionResponseDto;
+import ru.t1.java.demo.dto.api.TransactionRequestDto;
+import ru.t1.java.demo.dto.api.TransactionResponseDto;
 import ru.t1.java.demo.model.Transaction;
 
 /**

@@ -1,4 +1,4 @@
-package ru.t1.java.demo.dto;
+package ru.t1.java.demo.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,16 +12,21 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 /**
- * DTO-запроса для создания и обновления {@link ru.t1.java.demo.model.Transaction}.
+ * DTO-ответа для передачи информации {@link ru.t1.java.demo.model.Transaction}.
  */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TransactionRequestDto implements Serializable {
+public class TransactionResponseDto implements Serializable {
+    /**
+     * ID транзакции.
+     */
+    @JsonProperty("id")
+    private Long id;
+
     /**
      * ID счета.
      */

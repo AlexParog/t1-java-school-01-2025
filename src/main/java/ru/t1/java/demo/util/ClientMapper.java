@@ -3,9 +3,9 @@ package ru.t1.java.demo.util;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import ru.t1.java.demo.dto.ClientDto;
-import ru.t1.java.demo.dto.ClientRequestDto;
-import ru.t1.java.demo.dto.ClientResponseDto;
+import ru.t1.java.demo.dto.api.ClientDto;
+import ru.t1.java.demo.dto.api.ClientRequestDto;
+import ru.t1.java.demo.dto.api.ClientResponseDto;
 import ru.t1.java.demo.model.Client;
 
 /**

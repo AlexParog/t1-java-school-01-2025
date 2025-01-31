@@ -1,8 +1,9 @@
-package ru.t1.java.demo.model;
+package ru.t1.java.demo.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
+import ru.t1.java.demo.model.Account;
 
 import java.util.Arrays;
 

@@ -4,8 +4,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import ru.t1.java.demo.dto.AccountRequestDto;
-import ru.t1.java.demo.dto.AccountResponseDto;
+import ru.t1.java.demo.dto.api.AccountCreateRequestDto;
+import ru.t1.java.demo.dto.api.AccountResponseDto;
+import ru.t1.java.demo.dto.api.AccountUpdateRequestDto;
 import ru.t1.java.demo.model.Account;
 
 /**
@@ -22,32 +23,31 @@ public interface AccountMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "clientId", expression = "java(account.getClient().getId())")
     @Mapping(target = "accountTypeEnum", source = "accountTypeEnum")
-    @Mapping(target = "accountTransactions", source = "accountTransactions")
     @Mapping(target = "balance", source = "balance")
     @Mapping(target = "archiveDate", source = "archiveDate")
     AccountResponseDto toAccountResponseDto(Account account);
 
     /**
-     * Преобразует сущность {@link AccountRequestDto} в объект {@link Account}.
+     * Преобразует сущность {@link AccountCreateRequestDto} в объект {@link Account}.
      *
-     * @param accountRequestDto DTO с данными для создания счета.
-     * @return объект сущности счета.
+     * @param accountCreateRequestDto Dto с данными для создания нового счета.
+     * @return новый объект счета.
      */
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "client", ignore = true)
-    @Mapping(target = "accountTypeEnum", source = "accountTypeEnum")
-    @Mapping(target = "accountTransactions", source = "accountTransactions")
+    @Mapping(target = "accountTransactions", ignore = true)
+    @Mapping(target = "archiveDate", ignore = true)
     @Mapping(target = "balance", source = "balance")
-    @Mapping(target = "archiveDate", source = "archiveDate")
-    Account toAccount(AccountRequestDto accountRequestDto);
+    @Mapping(target = "accountTypeEnum", source = "accountTypeEnum")
+    Account toAccountAfterCreate(AccountCreateRequestDto accountCreateRequestDto);
+
 
     /**
-     * Обновляет существующий объект {@link Account} на основе данных из {@link AccountRequestDto}.
+     * Обновляет существующий объект {@link Account} на основе данных из {@link AccountUpdateRequestDto}.
      *
-     * @param accountRequestDto DTO с новыми данными счета.
-     * @param account           объект счета, который необходимо обновить.
+     * @param accountUpdateRequestDto DTO с новыми данными счета.
+     * @param account                 объект счета, который необходимо обновить.
      */
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "client", ignore = true)
-    void updateAccountFromDto(AccountRequestDto accountRequestDto, @MappingTarget Account account);
+    @Mapping(target = "accountTransactions", ignore = true)
+    void updateAccountFromDto(AccountUpdateRequestDto accountUpdateRequestDto, @MappingTarget Account account);
 }

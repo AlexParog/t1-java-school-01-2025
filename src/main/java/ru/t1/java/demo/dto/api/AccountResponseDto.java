@@ -1,4 +1,4 @@
-package ru.t1.java.demo.dto;
+package ru.t1.java.demo.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,6 +27,7 @@ public class AccountResponseDto implements Serializable {
     /**
      * ID счета.
      */
+    @JsonProperty("id")
     private Long id;
 
     /**
@@ -36,17 +37,12 @@ public class AccountResponseDto implements Serializable {
     @JsonProperty("client_id")
     private Long clientId;
 
-
+    /**
+     * Тип счета.
+     */
     @NotNull
     @JsonProperty("account_type_enum")
     private String accountTypeEnum;
-
-    /**
-     * Совершенные транзакции по счету.
-     */
-    @NotNull
-    @JsonProperty("account_transactions")
-    private Set<Transaction> accountTransactions = new LinkedHashSet<>();
 
     /**
      * Баланс счета.
