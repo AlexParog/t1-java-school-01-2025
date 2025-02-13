@@ -1,13 +1,9 @@
 package ru.t1.java.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.t1.java.demo.aop.Track;
-import ru.t1.java.demo.aop.HandlingResult;
-import ru.t1.java.demo.aop.LogExecution;
 import ru.t1.java.demo.dto.ClientDto;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.repository.ClientRepository;
@@ -20,21 +16,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация сервисного слоя для управления Клиентами.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository repository;
+    private final ClientMapper clientMapper;
 
-    @PostConstruct
-    void init() {
-        try {
-            List<Client> clients = parseJson();
-        } catch (IOException e) {
-            log.error("Ошибка во время обработки записей", e);
-        }
-//        repository.saveAll(clients);
-    }
+//    @PostConstruct
+//    void init() {
+//        try {
+//            List<Client> clients = parseJson();
+//        } catch (IOException e) {
+//            log.error("Ошибка во время обработки записей", e);
+//        }
+////        repository.saveAll(clients);
+//    }
 
     @Override
 //    @LogExecution
@@ -46,7 +46,7 @@ public class ClientServiceImpl implements ClientService {
         ClientDto[] clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"), ClientDto[].class);
 
         return Arrays.stream(clients)
-                .map(ClientMapper::toEntity)
+                .map(clientMapper::toClient)
                 .collect(Collectors.toList());
     }
 }
