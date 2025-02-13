@@ -1,4 +1,4 @@
-package ru.t1.java.demo.dto;
+package ru.t1.java.demo.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,24 +8,18 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import ru.t1.java.demo.model.Account;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * DTO-ответа для передачи информации {@link ru.t1.java.demo.model.Client}.
+ * DTO-запроса для создания и обновления {@link ru.t1.java.demo.model.Client}.
  */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ClientResponseDto implements Serializable {
-
-    /**
-     * ID клиента.
-     */
-    private Long id;
+public class ClientRequestDto {
 
     /**
      * Имя клиента.

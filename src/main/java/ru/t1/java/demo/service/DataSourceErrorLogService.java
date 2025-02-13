@@ -9,9 +9,10 @@ import ru.t1.java.demo.model.DataSourceErrorLog;
  */
 public interface DataSourceErrorLogService {
     /**
-     * Сохраняет лог ошибки источника данных.
+     * Сохраняет лог ошибки в базу данных.
      *
-     * @param dataSourceErrorLog Объект лога ошибки.
+     * @param e               исключение, вызвавшее ошибку.
+     * @param methodSignature сигнатура метода, в котором произошла ошибка.
      */
-    void saveLog(DataSourceErrorLog dataSourceErrorLog);
+    void saveLog(Exception e, String methodSignature);
 }

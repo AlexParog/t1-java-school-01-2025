@@ -1,7 +1,8 @@
 package ru.t1.java.demo.service;
 
-import ru.t1.java.demo.dto.TransactionRequestDto;
-import ru.t1.java.demo.dto.TransactionResponseDto;
+import ru.t1.java.demo.dto.api.TransactionRequestDto;
+import ru.t1.java.demo.dto.api.TransactionResponseDto;
+import ru.t1.java.demo.dto.kafka.TransactionKafkaDto;
 
 /**
  * Интерфейс сервисного слоя для управления Транзакциями.
@@ -18,6 +19,13 @@ public interface TransactionService {
     TransactionResponseDto createTransaction(TransactionRequestDto transactionRequestDto);
 
     /**
+     * Регистрирует транзакцию на основе данных, полученных из Kafka.
+     *
+     * @param transactionKafkaDto DTO с данными о транзакции из Kafka.
+     */
+    void registerTransactionFromKafka(TransactionKafkaDto transactionKafkaDto);
+
+    /**
      * Получает транзакцию по её идентификатору.
      *
      * @param id Идентификатор транзакции.
@@ -28,7 +36,7 @@ public interface TransactionService {
     /**
      * Обновляет транзакцию по её идентификатору.
      *
-     * @param id                  Идентификатор транзакции.
+     * @param id                    Идентификатор транзакции.
      * @param transactionRequestDto DTO с данными для обновления транзакции.
      * @return DTO с данными обновленной транзакции.
      */

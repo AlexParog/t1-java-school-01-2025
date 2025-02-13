@@ -14,6 +14,31 @@ logging:
   level:
     ROOT: INFO
     ru.t1.java.demo.controller.ClientController: DEBUG
+    ru.t1.java.demo.controller.AccountController: DEBUG
+    ru.t1.java.demo.controller.TransactionController: DEBUG
+    org.apache.kafka: INFO
+    org.hibernate.SQL: INFO
 
 t1:
   scan-path: ru.t1.java.demo
+  kafka:
+    enabled: ${KAFKA_ENABLED:true}
+    bootstrap-server: ${KAFKA_SERVER:localhost:9092} # адрес broker'а
+    consumer:
+      group-id: t1-demo
+      max-poll-records: 10 # max количество записей за один poll
+      session-timeout: 10000 # время ожидания сессии consumer
+      heartbeat-interval: 3000 # интервал heartbeats consumer
+    producer:
+      enable: true # включаем producer
+    topic:
+      account-registration: t1_demo_accounts # топик для счетов
+      transaction-registration: t1_demo_transactions # топик для транзакций
+      methods-metric: t1_demo_metrics # топик для метрик
+    listener:
+      poll-timeout: 1000
+    max:
+      partition-fetch-bytes: 300000
+      poll:
+        records: 1
+        interval-ms: 300000

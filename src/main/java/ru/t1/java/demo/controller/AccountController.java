@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.t1.java.demo.dto.AccountRequestDto;
-import ru.t1.java.demo.dto.AccountResponseDto;
+import ru.t1.java.demo.dto.api.AccountCreateRequestDto;
+import ru.t1.java.demo.dto.api.AccountResponseDto;
+import ru.t1.java.demo.dto.api.AccountUpdateRequestDto;
 import ru.t1.java.demo.service.AccountService;
 
 /**
@@ -28,21 +29,21 @@ public class AccountController {
     /**
      * Создаёт новый счет.
      *
-     * @param accountRequestDto DTO с данными для создания счета.
+     * @param accountCreateRequestDto DTO с данными для создания счета.
      * @return ответ с созданным счетом и статусом HTTP 201 Created.
      */
     @Operation(summary = "Создание счета", description = "Создает новый счет и сохраняет в БД")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Счет успешно создан",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AccountResponseDto.class))),
+                            schema = @Schema(implementation = AccountCreateRequestDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad request",
                     content = @Content)
     })
     @PostMapping
     public ResponseEntity<AccountResponseDto> createAccount(
-            @RequestBody AccountRequestDto accountRequestDto) {
-        AccountResponseDto accountResponseDto = accountService.createAccount(accountRequestDto);
+            @RequestBody AccountCreateRequestDto accountCreateRequestDto) {
+        AccountResponseDto accountResponseDto = accountService.createAccount(accountCreateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(accountResponseDto);
     }
 
@@ -68,23 +69,23 @@ public class AccountController {
     /**
      * Обновляет данные счета по его идентификатору.
      *
-     * @param id                идентификатор счета.
-     * @param accountRequestDto DTO с обновлёнными данными счета.
+     * @param id                      идентификатор счета.
+     * @param accountUpdateRequestDto DTO с обновлёнными данными счета.
      * @return обновлённый счет и статус HTTP 200 OK.
      */
     @Operation(summary = "Обновление информации о счете по ID", description = "Возвращает счет по ID с обновленными полями")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Обновленный счет",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AccountResponseDto.class))),
+                            schema = @Schema(implementation = AccountUpdateRequestDto.class))),
             @ApiResponse(responseCode = "404", description = "Ошибка при обновлении счета",
                     content = @Content)
     })
     @PutMapping("/{id}")
     public ResponseEntity<AccountResponseDto> updateAccountById(
             @PathVariable Long id,
-            @RequestBody AccountRequestDto accountRequestDto) {
-        return ResponseEntity.ok(accountService.updateAccountById(id, accountRequestDto));
+            @RequestBody AccountUpdateRequestDto accountUpdateRequestDto) {
+        return ResponseEntity.ok(accountService.updateAccountById(id, accountUpdateRequestDto));
     }
 
     /**
