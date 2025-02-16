@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.t1.java.demo.dto.api.TransactionRequestDto;
 import ru.t1.java.demo.dto.api.TransactionResponseDto;
@@ -41,10 +40,10 @@ public class TransactionController {
                     content = @Content)
     })
     @PostMapping
-    public ResponseEntity<TransactionResponseDto> createTransaction(
+    @ResponseStatus(HttpStatus.CREATED)
+    public TransactionResponseDto createTransaction(
             @Valid @RequestBody TransactionRequestDto transactionRequestDto) {
-        TransactionResponseDto transactionResponseDto = transactionService.createTransaction(transactionRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponseDto);
+        return transactionService.createTransaction(transactionRequestDto);
     }
 
     /**
@@ -62,8 +61,8 @@ public class TransactionController {
                     content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionResponseDto> getTransactionById(@PathVariable Long id) {
-        return new ResponseEntity<>(transactionService.getTransactionById(id), HttpStatus.OK);
+    public TransactionResponseDto getTransactionById(@PathVariable Long id) {
+        return transactionService.getTransactionById(id);
     }
 
     //TODO: getTransactionsByAccountId
@@ -85,10 +84,10 @@ public class TransactionController {
                     content = @Content)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<TransactionResponseDto> updateTransactionById(
+    public TransactionResponseDto updateTransactionById(
             @PathVariable Long id,
             @Valid @RequestBody TransactionRequestDto transactionRequestDto) {
-        return ResponseEntity.ok(transactionService.updateTransactionById(id, transactionRequestDto));
+        return transactionService.updateTransactionById(id, transactionRequestDto);
     }
 
     /**
@@ -107,7 +106,7 @@ public class TransactionController {
                     content = @Content)
     })
     @DeleteMapping("/archive/{id}")
-    public ResponseEntity<TransactionResponseDto> archiveTransactionById(@PathVariable Long id) {
-        return new ResponseEntity<>(transactionService.archiveTransactionById(id), HttpStatus.OK);
+    public TransactionResponseDto archiveTransactionById(@PathVariable Long id) {
+        return transactionService.archiveTransactionById(id);
     }
 }

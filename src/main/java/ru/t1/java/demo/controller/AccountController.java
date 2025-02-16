@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.t1.java.demo.dto.api.AccountCreateRequestDto;
 import ru.t1.java.demo.dto.api.AccountResponseDto;
@@ -41,10 +40,10 @@ public class AccountController {
                     content = @Content)
     })
     @PostMapping
-    public ResponseEntity<AccountResponseDto> createAccount(
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountResponseDto createAccount(
             @RequestBody AccountCreateRequestDto accountCreateRequestDto) {
-        AccountResponseDto accountResponseDto = accountService.createAccount(accountCreateRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountResponseDto);
+        return accountService.createAccount(accountCreateRequestDto);
     }
 
     /**
@@ -62,8 +61,8 @@ public class AccountController {
                     content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable Long id) {
-        return new ResponseEntity<>(accountService.getAccountById(id), HttpStatus.OK);
+    public AccountResponseDto getAccountById(@PathVariable Long id) {
+        return accountService.getAccountById(id);
     }
 
     /**
@@ -82,10 +81,10 @@ public class AccountController {
                     content = @Content)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<AccountResponseDto> updateAccountById(
+    public AccountResponseDto updateAccountById(
             @PathVariable Long id,
             @RequestBody AccountUpdateRequestDto accountUpdateRequestDto) {
-        return ResponseEntity.ok(accountService.updateAccountById(id, accountUpdateRequestDto));
+        return accountService.updateAccountById(id, accountUpdateRequestDto);
     }
 
     /**
@@ -104,8 +103,8 @@ public class AccountController {
                     content = @Content)
     })
     @DeleteMapping("/archive/{id}")
-    public ResponseEntity<AccountResponseDto> archiveAccountById(@PathVariable Long id) {
-        return new ResponseEntity<>(accountService.archiveAccountById(id), HttpStatus.OK);
+    public AccountResponseDto archiveAccountById(@PathVariable Long id) {
+        return accountService.archiveAccountById(id);
     }
 
 }
