@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponseDto createAccount(AccountCreateRequestDto accountCreateRequestDto) {
         log.info("Создание счета: {}", accountCreateRequestDto);
 
-        Client client = getClient(accountCreateRequestDto.getClientId());
+        Client client = findClientForAccount(accountCreateRequestDto.getClientId());
 
         Account account = accountMapper.toAccountAfterCreate(accountCreateRequestDto);
         account.setClient(client);
@@ -206,7 +206,7 @@ public class AccountServiceImpl implements AccountService {
      * @return найденный клиент.
      * @throws NotFoundException если клиент не найден.
      */
-    private Client getClient(Long clientId) {
+    private Client findClientForAccount(Long clientId) {
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> {
                     log.error("Клиент с ID: {} не найден", clientId);

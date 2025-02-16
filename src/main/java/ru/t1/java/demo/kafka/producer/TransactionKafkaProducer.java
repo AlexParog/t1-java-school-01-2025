@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletionException;
 
 /**
- * Компонент для отправки сообщений Kafka, связанных с сущностью {@link ru.t1.java.demo.model.Transaction}.
+ * Компонент для отправки сообщений Kafka, связанных с сущностью {@link TransactionKafkaDto}.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -22,17 +22,17 @@ public class TransactionKafkaProducer {
     private final KafkaTemplate<String, TransactionKafkaDto> template;
 
     /**
-     * Отправляет сообщение с данными о транзакции в Kafka.
+     * Отправляет сообщение с данными о входящей транзакции в Kafka.
      *
-     * @param transactionKafkaDto данные о транзакции для отправки.
+     * @param transactionKafkaDto данные о входящей транзакции для отправки.
      */
     public void send(TransactionKafkaDto transactionKafkaDto) {
         String defaultTopic = template.getDefaultTopic();
 
         template.send(defaultTopic, UUID.randomUUID().toString(), transactionKafkaDto)
-                .thenAccept(result -> log.info("Сообщение о Transaction отправлено успешно: {}", result))
+                .thenAccept(result -> log.info("Сообщение о TransactionKafkaDto отправлено успешно: {}", result))
                 .exceptionally(ex -> {
-                    log.error("Не удалось отправить сообщение о Transaction", ex);
+                    log.error("Не удалось отправить сообщение о TransactionKafkaDto", ex);
                     throw new CompletionException(ex);
                 });
     }
