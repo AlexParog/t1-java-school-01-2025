@@ -15,10 +15,13 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.t1.java.demo.dto.kafka.AccountKafkaDto;
+import ru.t1.java.demo.dto.kafka.TransactionAcceptDto;
 import ru.t1.java.demo.dto.kafka.TransactionKafkaDto;
+import ru.t1.java.demo.dto.kafka.TransactionResultDto;
 import ru.t1.java.demo.kafka.MessageDeserializer;
+import ru.t1.java.demo.kafka.producer.TransactionAcceptKafkaProducer;
 import ru.t1.java.demo.kafka.producer.TransactionKafkaProducer;
+import ru.t1.java.demo.kafka.producer.TransactionResultKafkaProducer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,11 +56,31 @@ public class TransactionKafkaConfiguration {
      */
     @Bean
     public ConsumerFactory<String, TransactionKafkaDto> transactionConsumerFactory() {
-        return createConsumerFactory();
+        return createConsumerFactory(TransactionKafkaDto.class);
     }
 
     /**
-     * Создает фабрику слушателей Kafka с обработчиком ошибок.
+     * Создает фабрику консьюмера Kafka для обработки сообщений о результатах транзакций.
+     *
+     * @return {@link ConsumerFactory} для {@link TransactionResultDto}.
+     */
+    @Bean
+    public ConsumerFactory<String, TransactionResultDto> transactionResultConsumerFactory() {
+        return createConsumerFactory(TransactionResultDto.class);
+    }
+
+    /**
+     * Создает фабрику консьюмера Kafka для обработки сообщений о подтвержденных транзакций.
+     *
+     * @return {@link ConsumerFactory} для {@link TransactionAcceptDto}.
+     */
+    @Bean
+    public ConsumerFactory<String, TransactionAcceptDto> transactionAcceptConsumerFactory() {
+        return createConsumerFactory(TransactionAcceptDto.class);
+    }
+
+    /**
+     * Создает фабрику слушателей Kafka для входящих транзакций {@link TransactionKafkaDto}.
      *
      * @param consumerFactory фабрика консьюмеров.
      * @param errorHandler    обработчик ошибок Kafka.
@@ -75,12 +98,68 @@ public class TransactionKafkaConfiguration {
     }
 
     /**
+     * Создает фабрику слушателей Kafka для результатов транзакций {@link TransactionResultDto}.
+     *
+     * @param consumerFactory фабрика консьюмеров.
+     * @param errorHandler    обработчик ошибок Kafka.
+     * @return фабрика контейнера слушателей Kafka.
+     */
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, TransactionResultDto> transactionResultKafkaListenerFactory(
+            @Qualifier("transactionResultConsumerFactory") ConsumerFactory<String, TransactionResultDto> consumerFactory,
+            CommonErrorHandler errorHandler) {
+        ConcurrentKafkaListenerContainerFactory<String, TransactionResultDto> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        kafkaListenerFactoryBuilder(consumerFactory, factory);
+        factory.setCommonErrorHandler(errorHandler);
+        return factory;
+    }
+
+    /**
+     * Создает фабрику слушателей Kafka для подтвержденных транзакций {@link TransactionAcceptDto}.
+     *
+     * @param consumerFactory фабрика консьюмеров.
+     * @param errorHandler    обработчик ошибок Kafka.
+     * @return фабрика контейнера слушателей Kafka.
+     */
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, TransactionAcceptDto> transactionAcceptKafkaListenerFactory(
+            @Qualifier("transactionAcceptConsumerFactory") ConsumerFactory<String, TransactionAcceptDto> consumerFactory,
+            CommonErrorHandler errorHandler) {
+        ConcurrentKafkaListenerContainerFactory<String, TransactionAcceptDto> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        kafkaListenerFactoryBuilder(consumerFactory, factory);
+        factory.setCommonErrorHandler(errorHandler);
+        return factory;
+    }
+
+    /**
      * Создает фабрику продюсера Kafka для отправки сообщений о транзакциях.
      *
      * @return {@link ProducerFactory} для {@link TransactionKafkaDto}.
      */
     @Bean
     public ProducerFactory<String, TransactionKafkaDto> transactionProducerFactory() {
+        return createProducerFactory();
+    }
+
+    /**
+     * Создает фабрику продюсера Kafka для отправки сообщений о подтвержденных транзакциях.
+     *
+     * @return {@link ProducerFactory} для {@link TransactionAcceptDto}.
+     */
+    @Bean
+    public ProducerFactory<String, TransactionAcceptDto> transactionAcceptProducerFactory() {
+        return createProducerFactory();
+    }
+
+    /**
+     * Создает фабрику продюсера Kafka для отправки сообщений о результатах транзакций.
+     *
+     * @return {@link ProducerFactory} для {@link TransactionResultDto}.
+     */
+    @Bean
+    public ProducerFactory<String, TransactionResultDto> transactionResultProducerFactory() {
         return createProducerFactory();
     }
 
@@ -93,6 +172,30 @@ public class TransactionKafkaConfiguration {
     @Bean
     public KafkaTemplate<String, TransactionKafkaDto> kafkaTransactionTemplate(
             @Qualifier("transactionProducerFactory") ProducerFactory<String, TransactionKafkaDto> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    /**
+     * Создает шаблон Kafka для отправки сообщений о подтвержденных транзакциях.
+     *
+     * @param producerFactory фабрика продюсеров.
+     * @return {@link KafkaTemplate} для {@link TransactionAcceptDto}.
+     */
+    @Bean
+    public KafkaTemplate<String, TransactionAcceptDto> kafkaTransactionAcceptTemplate(
+            @Qualifier("transactionAcceptProducerFactory") ProducerFactory<String, TransactionAcceptDto> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    /**
+     * Создает шаблон Kafka для отправки сообщений о результатах транзакций.
+     *
+     * @param producerFactory фабрика продюсеров.
+     * @return {@link KafkaTemplate} для {@link TransactionResultDto}.
+     */
+    @Bean
+    public KafkaTemplate<String, TransactionResultDto> kafkaTransactionResultTemplate(
+            @Qualifier("transactionResultProducerFactory") ProducerFactory<String, TransactionResultDto> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 
@@ -113,17 +216,51 @@ public class TransactionKafkaConfiguration {
     }
 
     /**
-     * Создает и настраивает {@link ConsumerFactory} для получения сообщений типа {@link TransactionKafkaDto}.
+     * Создает продюсер сообщений о подтвержденных транзакциях.
      *
-     * @return настроенный экземпляр {@link ConsumerFactory} для Kafka-консьюмеров.
+     * @param template шаблон Kafka для отправки сообщений.
+     * @return объект {@link TransactionAcceptKafkaProducer}.
      */
-    private ConsumerFactory<String, TransactionKafkaDto> createConsumerFactory() {
+    @Bean
+    @ConditionalOnProperty(value = "${t1.kafka.producer.enable}",
+            havingValue = "true",
+            matchIfMissing = true)
+    public TransactionAcceptKafkaProducer producerTransactionAccept(
+            @Qualifier("kafkaTransactionAcceptTemplate") KafkaTemplate<String, TransactionAcceptDto> template) {
+        template.setDefaultTopic(kafkaProperties.getTopic().getTransactionAcceptStatus());
+        return new TransactionAcceptKafkaProducer(template);
+    }
+
+    /**
+     * Создает продюсер сообщений о результатах транзакций.
+     *
+     * @param template шаблон Kafka для отправки сообщений.
+     * @return объект {@link TransactionResultKafkaProducer}.
+     */
+    @Bean
+    @ConditionalOnProperty(value = "${t1.kafka.producer.enable}",
+            havingValue = "true",
+            matchIfMissing = true)
+    public TransactionResultKafkaProducer producerTransactionResult(
+            @Qualifier("kafkaTransactionResultTemplate") KafkaTemplate<String, TransactionResultDto> template) {
+        template.setDefaultTopic(kafkaProperties.getTopic().getTransactionResultStatus());
+        return new TransactionResultKafkaProducer(template);
+    }
+
+    /**
+     * Создает и настраивает фабрику ConsumerFactory для Kafka.
+     *
+     * @param clazz Класс, используемый для десериализации сообщений.
+     * @param <T>   Тип данных сообщения.
+     * @return Настроенная фабрика потребителей.
+     */
+    private <T> ConsumerFactory<String, T> createConsumerFactory(Class<T> clazz) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServer());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, MessageDeserializer.class);
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.t1.java.demo.dto.kafka.TransactionKafkaDto");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, clazz.getName());
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "ru.t1.java.demo.dto.kafka");
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
         props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, kafkaProperties.getMax().getPartitionFetchBytes());
@@ -137,18 +274,19 @@ public class TransactionKafkaConfiguration {
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, MessageDeserializer.class.getName());
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, MessageDeserializer.class);
 
-        DefaultKafkaConsumerFactory<String, TransactionKafkaDto> factory = new DefaultKafkaConsumerFactory<>(props);
+        DefaultKafkaConsumerFactory<String, T> factory = new DefaultKafkaConsumerFactory<>(props);
         factory.setKeyDeserializer(new StringDeserializer());
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     /**
-     * Создает и настраивает {@link ProducerFactory} для отправки сообщений типа {@link TransactionKafkaDto}.
+     * Создает и настраивает фабрику ProducerFactory для Kafka.
      *
-     * @return настроенный экземпляр {@link ProducerFactory} для Kafka-продюсеров.
+     * @param <T> Тип данных сообщения.
+     * @return Настроенная фабрика производителей.
      */
-    private ProducerFactory<String, TransactionKafkaDto> createProducerFactory() {
+    private <T> ProducerFactory<String, T> createProducerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServer());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -165,13 +303,13 @@ public class TransactionKafkaConfiguration {
      * @param consumerFactory фабрика консьюмеров {@link ConsumerFactory}, используемая для обработки сообщений.
      * @param factory         контейнерная фабрика {@link ConcurrentKafkaListenerContainerFactory}, которая будет настроена.
      */
-    private void kafkaListenerFactoryBuilder(ConsumerFactory<String, TransactionKafkaDto> consumerFactory,
-                                             ConcurrentKafkaListenerContainerFactory<String, TransactionKafkaDto> factory) {
+    private <T> void kafkaListenerFactoryBuilder(ConsumerFactory<String, T> consumerFactory,
+                                                 ConcurrentKafkaListenerContainerFactory<String, T> factory) {
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         factory.setConcurrency(1);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        factory.getContainerProperties().setPollTimeout(5000);
+        factory.getContainerProperties().setPollTimeout(Long.parseLong(kafkaProperties.getListener().getPollTimeout()));
         factory.getContainerProperties().setMicrometerEnabled(true);
     }
 }

@@ -1,7 +1,6 @@
 package ru.t1.java.demo.config;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -99,9 +98,19 @@ public class KafkaProperties {
         private String accountRegistration;
 
         /**
-         * Топик для регистрации транзакций.
+         * Топик для регистрации входящих транзакций.
          */
         private String transactionRegistration;
+
+        /**
+         * Топик для подтвержденных транзакций.
+         */
+        private String transactionAcceptStatus;
+
+        /**
+         * Топик для обработки результата транзакции.
+         */
+        private String transactionResultStatus;
 
         /**
          * Топик для метрик выполнения методов.

@@ -33,7 +33,9 @@ t1:
       enable: true # включаем producer
     topic:
       account-registration: t1_demo_accounts # топик для счетов
-      transaction-registration: t1_demo_transactions # топик для транзакций
+      transaction-registration: t1_demo_transactions # топик для входящих транзакций
+      transaction-accept-status: t1_demo_transaction_accept # топик для подтвержденных транзакций
+      transaction-result-status: t1_demo_transaction_result # топик для результатов обработки
       methods-metric: t1_demo_metrics # топик для метрик
     listener:
       poll-timeout: 1000
@@ -42,3 +44,8 @@ t1:
       poll:
         records: 1
         interval-ms: 300000
+
+transaction:
+  aggregation:
+    max-transactions: 3 # максимальное количество транзакций для одного клиента/счёта
+    period-ms: 60000 # период времени (в миллисекундах), в течение которого агрегируются транзакции
