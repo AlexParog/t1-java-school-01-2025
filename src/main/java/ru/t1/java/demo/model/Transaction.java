@@ -8,9 +8,11 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.t1.java.demo.model.enums.TransactionStatusEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Класс представляет сущность "Транзакции".
@@ -25,11 +27,26 @@ import java.time.LocalDateTime;
 public class Transaction extends AbstractPersistable<Long> {
 
     /**
+     * Уникальный идентификатор транзакции.
+     */
+    @NotNull
+    @Column(name = "transaction_id")
+    private UUID transactionId;
+
+    /**
      * ID счета.
      */
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    /**
+     * Статус транзакции.
+     */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private TransactionStatusEnum status;
 
     /**
      * Сумма транзакции.
