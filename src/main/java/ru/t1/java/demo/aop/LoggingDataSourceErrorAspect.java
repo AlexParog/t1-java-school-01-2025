@@ -61,7 +61,7 @@ public class LoggingDataSourceErrorAspect {
             metricKafkaProducer.send(metricMessageDto);
         } catch (Exception e) {
             log.error("Ошибка при отправке сообщения в Kafka", e);
-            dataSourceErrorLogService.saveLog((Exception) exception, joinPoint.getSignature().toLongString());
+            dataSourceErrorLogService.saveLog(exception, joinPoint.getSignature().toLongString());
         }
     }
 }

@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AccountKafkaDto implements Serializable {
+public class AccountKafkaDto {
     /**
      * ID Клиента, которому принадлежит счет.
      */

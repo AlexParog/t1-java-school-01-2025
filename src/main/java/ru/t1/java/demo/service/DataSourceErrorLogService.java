@@ -14,5 +14,5 @@ public interface DataSourceErrorLogService {
      * @param e               исключение, вызвавшее ошибку.
      * @param methodSignature сигнатура метода, в котором произошла ошибка.
      */
-    void saveLog(Exception e, String methodSignature);
+    void saveLog(Throwable e, String methodSignature);
 }

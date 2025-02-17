@@ -32,7 +32,7 @@ public class DataSourceErrorLogServiceImpl implements DataSourceErrorLogService 
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public void saveLog(Exception e, String methodSignature) {
+    public void saveLog(Throwable e, String methodSignature) {
         DataSourceErrorLog dataSourceErrorLog = new DataSourceErrorLog();
         dataSourceErrorLog.setMessage(e.getMessage());
         dataSourceErrorLog.setStacktrace(Arrays.toString(e.getStackTrace()));

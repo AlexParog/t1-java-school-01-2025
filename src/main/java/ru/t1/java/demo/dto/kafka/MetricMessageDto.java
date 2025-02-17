@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.t1.java.demo.model.enums.MetricMessageTypeEnum;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MetricMessageDto implements Serializable {
+public class MetricMessageDto {
     /**
      * Тип метрики.
      */

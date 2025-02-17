@@ -1,11 +1,13 @@
 package ru.t1.java.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Класс представляет сущность "Клиента".
@@ -18,6 +20,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "client")
 public class Client extends AbstractPersistable<Long> {
+
+    /**
+     * Уникальный идентификатор клиента.
+     */
+    @NotNull
+    @Column(name = "client_id")
+    private UUID clientId;
 
     /**
      * Имя клиента.

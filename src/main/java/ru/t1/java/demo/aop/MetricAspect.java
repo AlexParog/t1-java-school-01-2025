@@ -48,23 +48,50 @@ public class MetricAspect {
     @Around("@annotation(metric)")
     public Object measureMethodExecutionTime(ProceedingJoinPoint joinPoint, Metric metric) throws Throwable {
         long startTime = System.currentTimeMillis();
-        Object result = joinPoint.proceed();
-        long executionTime = System.currentTimeMillis() - startTime;
+        try {
+            Object result = joinPoint.proceed();
+            long executionTime = System.currentTimeMillis() - startTime;
 
-        if (executionTime > metric.value()) {
-            MetricMessageDto metricMessageDto = new MetricMessageDto();
-            metricMessageDto.setType(MetricMessageTypeEnum.METRICS);
-            metricMessageDto.setMessage(EXECUTION_TIME_EXCEEDED);
-            metricMessageDto.setMethodSignature(joinPoint.getSignature().toLongString());
-            metricMessageDto.setExecutionTimeMs(executionTime);
-            metricMessageDto.setParameters(getMethodParameters(joinPoint));
-
-
-            log.info("Отправка метрик: {} в Kafka", metricMessageDto);
+            // время выполнения превышает порог, отправить метрику
+            if (executionTime > metric.value()) {
+                MetricMessageDto metricMessageDto = buildMetricMessage(joinPoint, executionTime, null);
+                log.info("Отправка метрик: {} в Kafka", metricMessageDto);
+                metricKafkaProducer.send(metricMessageDto);
+            }
+            return result;
+        } catch (Throwable throwable) {
+            long executionTime = System.currentTimeMillis() - startTime;
+            // фиксируем метрику для методов, завершившихся с выбросом исключения.
+            MetricMessageDto metricMessageDto = buildMetricMessage(joinPoint, executionTime, throwable);
+            log.error("Метод завершился с ошибкой, отправка метрик: {} в Kafka", metricMessageDto, throwable);
             metricKafkaProducer.send(metricMessageDto);
-        }
 
-        return result;
+            // пробрасываем исключение дальше
+            throw throwable;
+        }
+    }
+
+    /**
+     * Вспомогательный метод для формирования метрики.
+     *
+     * @param joinPoint     точка соединения метода
+     * @param executionTime время выполнения метода в миллисекундах
+     * @param throwable     выброшенное исключение, если оно произошло, иначе null
+     * @return заполненный объект метрики
+     */
+    private MetricMessageDto buildMetricMessage(ProceedingJoinPoint joinPoint, long executionTime, Throwable throwable) {
+        MetricMessageDto metricMessageDto = new MetricMessageDto();
+        metricMessageDto.setType(MetricMessageTypeEnum.METRICS);
+
+        if (throwable != null) {
+            metricMessageDto.setMessage("Method execution failed: " + throwable.getMessage());
+        } else {
+            metricMessageDto.setMessage(EXECUTION_TIME_EXCEEDED);
+        }
+        metricMessageDto.setMethodSignature(joinPoint.getSignature().toLongString());
+        metricMessageDto.setExecutionTimeMs(executionTime);
+        metricMessageDto.setParameters(getMethodParameters(joinPoint));
+        return metricMessageDto;
     }
 
     /**

@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AccountCreateRequestDto implements Serializable {
+public class AccountCreateRequestDto {
 
     /**
      * ID Клиента, которому принадлежит счет.

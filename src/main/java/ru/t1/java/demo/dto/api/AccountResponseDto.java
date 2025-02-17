@@ -23,7 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AccountResponseDto implements Serializable {
+public class AccountResponseDto {
     /**
      * ID счета.
      */

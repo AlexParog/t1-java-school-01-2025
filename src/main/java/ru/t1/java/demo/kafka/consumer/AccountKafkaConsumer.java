@@ -35,7 +35,7 @@ public class AccountKafkaConsumer {
      */
     @KafkaListener(id = "accountListener",
             groupId = "${t1.kafka.consumer.group-id}",
-            topics = "${t1.kafka.topic.transaction-registration}",
+            topics = "${t1.kafka.topic.account-registration}",
             containerFactory = "accountKafkaListenerFactory")
     public void listener(@Payload List<AccountKafkaDto> messageAccountKafkaDtoList,
                          Acknowledgment ack,
